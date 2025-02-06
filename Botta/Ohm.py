@@ -16,15 +16,15 @@ for archivo in archivos:                                                        
 
 #Datos
 
-for i in range(4):
-    plt.figure()
-    plt.title("medicion: " + str(archivos[i]))
-    plt.xlabel("Tiempo [s]")
-    plt.ylabel("Voltaje [V]")
-    plt.plot(med[i][0], med[i][1],".", label = "CH1")
-    plt.plot(med[i][2], med[i][3],".", label = "CH2")
-    plt.legend()
-plt.show(block=True)
+# for i in range(4):
+#     plt.figure()
+#     plt.title("medicion: " + str(archivos[i]))
+#     plt.xlabel("Tiempo [s]")
+#     plt.ylabel("Voltaje [V]")
+#     plt.plot(med[i][0], med[i][1],".", label = "CH1")
+#     plt.plot(med[i][2], med[i][3],".", label = "CH2")
+#     plt.legend()
+# plt.show(block=True)
 
 raux = 1000 # Ω 
 R = 5000 # Ω
@@ -58,7 +58,7 @@ plt.ylabel("V [V]")
 plt.xlabel("I [A]")
 plt.plot(ejex, modelo(ejex, pop[0]), "r", label = "Ajuste")
 plt.errorbar(corriente, voltaje, yerr = std, fmt =".", label = "Mediciones")
-plt.text(0.8, 0.1, r"$\chi^2 / \nu$ = {chi/nu:.1f} ± {s:.1f}", 
+plt.text(0.8, 0.1, f"$\chi^2$ = {chi/nu:.1f} ± {s:.1f}", 
          transform=plt.gca().transAxes, fontsize=10, color="black")
 plt.legend()
 plt.show(block=True)

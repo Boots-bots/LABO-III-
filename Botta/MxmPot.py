@@ -30,7 +30,8 @@ pop,cov = curve_fit(modelo, oms, potencia, (6, 5), std, absolute_sigma = True)
 ymod = [modelo(R, pop[0], pop[1]) for R in oms]
 chi,pv,nu = chi2_pvalor(potencia, std, ymod, ("r","V"))
 
-print(chi/nu,pv)
+print(chi/nu, "±", np.sqrt(2/nu))
+print("pval: ", pv)
 # print(pop)
 print(pop, np.sqrt(np.diag(cov)))
 
@@ -55,7 +56,7 @@ plt.title("Medición de máxima Potencia")
 plt.xlabel("Resistencia de carga [Ω]")
 plt.ylabel("Potencia [W], Corriente [A]")
 plt.errorbar(oms, potencia, yerr = std2, fmt = ".", color = "b", label = "Potencia transferida")
-plt.axvline(pop[0], linestyle = "-.", color = "brown", label = "Resistencia interna 6.4 ± 0.3 Ω" ) 
+plt.axvline(pop[0], linestyle = "-.", color = "brown", label = "Resistencia interna (6.4 ± 0.3)Ω" ) 
 plt.plot(ejex, modelo(ejex, pop[0], pop[1]), "r", label = "Ajuste") 
 # plt.plot(ejex2, om(ejex, pop2[0]), "g", label = "Ajuste") 
 plt.errorbar(oms, ampere, yerr = stdA, fmt = ".", color = "g", label = "Medición de corriente" )

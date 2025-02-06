@@ -50,16 +50,19 @@ print("chi2N: ", chi/nu, "±", np.sqrt(2/nu))
 print("chi2: ", chi, "±", np.sqrt(2*nu))
 print("pvalor: ", pv)
 
+s = np.sqrt(2/nu)
 ejex = np.linspace(np.min(corriente), np.max(corriente), 10000)
 plt.figure()
 plt.title("Medición Ley Ohm (DC)")
 plt.ylabel("V [V]")
 plt.xlabel("I [A]")
-plt.errorbar(corriente, voltaje, yerr = std, fmt =".", label = "Mediciones")
 plt.plot(ejex, modelo(ejex, pop[0]), "r", label = "Ajuste")
+plt.errorbar(corriente, voltaje, yerr = std, fmt =".", label = "Mediciones")
+plt.text(0.8, 0.1, r"$\chi^2 / \nu$ = {chi/nu:.1f} ± {s:.1f}", 
+         transform=plt.gca().transAxes, fontsize=10, color="black")
 plt.legend()
 plt.show(block=True)
-
+exit()
 #AC
 def iraux(Vgen,VR,raux):
     return (Vgen - VR)/raux
@@ -68,6 +71,7 @@ for m in range(4):
     iR = [iraux(med[m][1][j],med[m][3][j],raux) for j in range(len(med[m][0]))]
     VR = med[m][3]
     std = 0.005*np.ones(len(med[m][0]))
+    pop = 0
     pop,cov = curve_fit(modelo, iR, VR, (R), std, absolute_sigma = True)
     pop = Minimizer(modelo, iR, VR, std, (R), metodo = "CG")
     print("----------------")

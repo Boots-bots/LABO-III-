@@ -3,34 +3,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from common_settings import*
 
-##################################################################################
-def Minimizer(f, x_data, y_data, std, parametros_iniciales, metodo = None, opciones = None):
-    def error(parametros):
-        y_mod = f(x_data, *parametros)
-        return np.sum(((y_data - y_mod)/std)**2)
-
-    def jacobiano(parametros):
-        epsilon = np.sqrt(np.finfo(float).eps)
-        return np.array([(error(parametros + epsilon * np.eye(1, len(parametros), k)[0]) - error(parametros)) / epsilon for k in range(len(parametros))], dtype = float)
-
-    def hessiano(parametros):
-        epsilon = np.sqrt(np.finfo(float).eps)
-        n = len(parametros)
-        hess = np.zeros((n, n), dtype=float)
-        for i in range(n):
-            for j in range(n):
-                ei = np.eye(1, n, i)[0] * epsilon
-                ej = np.eye(1, n, j)[0] * epsilon
-                hess[i, j] = (error(parametros + ei + ej) - error(parametros + ei) - error(parametros + ej) + error(parametros)) / (epsilon ** 2)
-        return np.array([hess], dtype = float)
-
-    jac = jacobiano if metodo in ['Newton-CG', 'dogleg', 'trust-ncg', 'trust-krylov', 'trust-exact'] else None
-    hess = hessiano if metodo in ['trust-ncg', 'trust-krylov', 'trust-exact'] else None
-    
-    resultado = minimize(error, parametros_iniciales, method=metodo, jac=jac, hess=hess, options=opciones)
-    
-    return resultado.x
-#################################################################################################
 
 def errorMulti(L, x, n, Dms):
     return x*L + n*Dms

@@ -363,3 +363,37 @@ import os
 # %run 'path_to_config/common_settings.py'
 
 ##############################################################
+
+
+
+# A corregir y mejorar
+##################################################################################
+Metodos = ["Nelder-Mead", "Powell", "BFGS", "L-BFGS-B", "CG", "Newton-CG", "TNC", "COBYLA", "SLSQP", "dogleg", "trust-constr", "trust-ncg", "trust-exact", "trust-krylov"] #curvefit (COBYQA)
+def Minimizer(f, x_data, y_data, std, parametros_iniciales, metodo = None, opciones = None):          #usar funciones que tomen np.arrays
+    "Metodos: Nelder-Mead, Powell, BFGS, L-BFGS-B, CG, Newton-CG, TNC, COBYLA, COBYQA, SLSQP, dogleg, trust-constr, trust-ncg, trust-exact, trust-krylov"
+    def error(parametros):
+        y_mod = f(x_data, *parametros)
+        return np.sum(((y_data - y_mod)/std)**2)
+
+    def jacobiano(parametros):
+        epsilon = np.sqrt(np.finfo(float).eps)
+        return np.array([(error(parametros + epsilon * np.eye(1, len(parametros), k)[0]) - error(parametros)) / epsilon for k in range(len(parametros))], dtype = float)
+
+    def hessiano(parametros):
+        epsilon = np.sqrt(np.finfo(float).eps)
+        n = len(parametros)
+        hess = np.zeros((n, n), dtype=float)
+        for i in range(n):
+            for j in range(n):
+                ei = np.eye(1, n, i)[0] * epsilon
+                ej = np.eye(1, n, j)[0] * epsilon
+                hess[i, j] = (error(parametros + ei + ej) - error(parametros + ei) - error(parametros + ej) + error(parametros)) / (epsilon ** 2)
+        return hess
+
+    jac = jacobiano if metodo in ['Newton-CG', 'dogleg', 'trust-ncg', 'trust-krylov', 'trust-exact'] else None
+    hess = hessiano if metodo in ['trust-ncg', 'trust-krylov', 'trust-exact'] else None
+    
+    resultado = minimize(error, parametros_iniciales, method=metodo, jac=jac, hess=hess, options=opciones)
+
+    return resultado.x
+#################################################################################################

@@ -16,15 +16,15 @@ for archivo in archivos:                                                        
 
 #Datos
 
-# for i in range(4):
-#     plt.figure()
-#     plt.title("medicion: " + str(archivos[i]))
-#     plt.xlabel("Tiempo [s]")
-#     plt.ylabel("Voltaje [V]")
-#     plt.plot(med[i][0], med[i][1],".", label = "CH1")
-#     plt.plot(med[i][2], med[i][3],".", label = "CH2")
-#     plt.legend()
-# plt.show(block=True)
+for i in range(4):
+    plt.figure()
+    plt.title("medicion: " + str(archivos[i]))
+    plt.xlabel("Tiempo [s]")
+    plt.ylabel("Voltaje [V]")
+    plt.plot(med[i][0], med[i][1],".", label = "CH1")
+    plt.plot(med[i][2], med[i][3],".", label = "CH2")
+    plt.legend()
+plt.show(block=True)
 
 raux = 1000 # Ω 
 R = 5000 # Ω
@@ -58,11 +58,15 @@ plt.ylabel("V [V]")
 plt.xlabel("I [A]")
 plt.plot(ejex, modelo(ejex, pop[0]), "r", label = "Ajuste")
 plt.errorbar(corriente, voltaje, yerr = std, fmt =".", label = "Mediciones")
-plt.text(0.8, 0.1, f"$\chi^2$ = {chi/nu:.1f} ± {s:.1f}", 
+plt.text(0.8, 0.2, f"$\chi^2$ = {chi/nu:.1f} ± {s:.1f}", 
+         transform=plt.gca().transAxes, fontsize=10, color="black")
+plt.text(0.8, 0.1, f"p-valor = {pv:.1f}", 
          transform=plt.gca().transAxes, fontsize=10, color="black")
 plt.legend()
 plt.show(block=True)
-exit()
+
+
+
 #AC
 def iraux(Vgen,VR,raux):
     return (Vgen - VR)/raux
@@ -79,9 +83,11 @@ for m in range(4):
     print("R =", pop[0], "±", np.sqrt(np.diag(cov))[0])
     ymod = [modelo(i, pop[0]) for i in iR]
     chi,pv,nu = chi2_pvalor(VR, std, ymod, ("R"))
+    pearson = R2(VR,ymod)
     print("chi2N: ", chi/nu, "±", np.sqrt(2/nu))
     print("chi2: ", chi, "±", np.sqrt(2*nu))
     print("pvalor: ", pv)
+    print("R^2: ", pearson)
     ejex = np.linspace(np.min(iR), np.max(iR), 1000000)
     plt.figure()
     plt.title("medicion: " + str(archivos[m]))

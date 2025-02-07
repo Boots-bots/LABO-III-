@@ -8,7 +8,7 @@ from scipy.optimize import minimize                                        # min
 from scipy.signal import find_peaks                                        # máximos
 from scipy.signal import argrelmin                                         # mínimos
 import sympy as sp                                                         # sympy 
-
+import pandas as pd
 
 from scipy.optimize._numdiff import approx_derivative
 from sympy import symbols, Matrix

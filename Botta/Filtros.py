@@ -3,8 +3,10 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from common_settings import*
 
+R = 10      # Ω
+C = 0.00001 # F  (10μF)
 
-ruta = "C:/Users/faust/Documents/UBA/Actividades/Laboratorio/3/Datos/PasaBajos(RC).txt"
+ruta = "C:/Users/faust/Documents/UBA/Actividades/Laboratorio/3/Datos/PasaBajos(RC)3.txt" # , 2, 3
 
 # Inicializar variables
 data_dict = {}
@@ -44,10 +46,16 @@ for freq, data in data_dict.items():
 
 df = pd.concat(df_list).set_index(["Frequency", "time"])
 
+def convert_frequency(freq_str):
+    if freq_str.endswith('K'):
+        return float(freq_str[:-1]) * 1e3
+    elif freq_str.endswith('M'):
+        return float(freq_str[:-1]) * 1e6
+    else:
+        return float(freq_str)
 
 frecuencias = df.index.get_level_values(0).unique()
-
-# frecuencias = ["90K"]
+frecuencias_num = np.array([convert_frequency(freq) for freq in frecuencias])
 
 XmxmIn, YmxmIn = [], []
 XminIn, YminIn = [], []
@@ -72,51 +80,143 @@ for frec in frecuencias:
     XminOut.append(xmout)
     YminOut.append(ymout)
 
-diferencias = []
-for i in range(len(XmxmIn)):
-    DifFrec = []
-    for j in range(len(XmxmIn[i])):
-        DifFrec.append(XmxmIn[i][j] - XmxmOut[i][j])
-    # for j in range(len(XminOut[i])):
-    #     DifFrec.append(XminIn[i][j] - XminOut[i][j])
-    diferencias.append(DifFrec)
 
-Diferencias = [np.mean(diferencias[i]) for i in range(len(diferencias))]
+# for i in range(len(frecuencias)):
+#     subset = df.loc[frecuencias[i]]
+#     plt.figure()
+#     plt.title(f"V(a) para {frecuencias[i]}Hz")
+#     plt.xlabel("Tiempo (s)")
+#     plt.ylabel("Voltaje (V)")
+#     plt.plot(subset.index, subset["V(a)"], ".-b", label=f"Vout(a)")
+#     plt.plot(subset.index, subset["V(c)"], ".-r", label=f"Vin(c)")
+#     plt.plot(XmxmIn[i], YmxmIn[i], "og", label="Máximo")
+#     plt.plot(XminIn[i], YminIn[i], "og", label="Minimo")
+#     plt.plot(XmxmOut[i], YmxmOut[i], "om")
+#     plt.plot(XminOut[i], YminOut[i], "om")
+#     plt.legend()
+#     plt.show(block=True)
+
+diferenciasF = []
+diferenciasV = []
+for i in range(len(frecuencias)):
+    #desfasajes
+    DifFrec = []
+    if len(XmxmIn[i]) == len(XmxmOut[i]):
+        for j in range(len(XmxmIn[i])):
+            DifFrec.append(XmxmIn[i][j] - XmxmOut[i][j])
+    else:
+        min_len = min(len(XmxmIn[i]), len(XmxmOut[i]))
+        for j in range(min_len):
+            DifFrec.append(XmxmIn[i][j] - XmxmOut[i][j])
+    if len(XminIn[i]) == len(XminOut[i]):
+        for j in range(len(XminIn[i])):
+            DifFrec.append(XminIn[i][j] - XminOut[i][j])
+    else:
+        min_len = min(len(XminIn[i]), len(XminOut[i]))
+        for j in range(min_len):
+            DifFrec.append(XminIn[i][j] - XminOut[i][j])
+    diferenciasF.append(DifFrec)
+
+    #transferencias
+    DifV = []
+    if len(YmxmIn[i]) == len(YmxmOut[i]):
+        for j in range(len(YmxmIn[i])):
+            DifV.append(YmxmOut[i][j]/YmxmIn[i][j])
+    else:
+        min_len = min(len(YmxmIn[i]), len(YmxmOut[i]))
+        for j in range(min_len):
+            DifV.append(YmxmOut[i][j]/YmxmIn[i][j])
+    if len(YminIn[i]) == len(YminOut[i]):
+        for j in range(len(YminIn[i])):
+            DifV.append(YminOut[i][j]/YminIn[i][j])
+    else:
+        min_len = min(len(YminIn[i]), len(YminOut[i]))
+        for j in range(min_len):
+            DifV.append(YminOut[i][j]/YminIn[i][j])
+    diferenciasV.append(DifV)
+
+#corrección
+diferenciasF.pop(0)
+diferenciasV.pop(0)
+
+DiferenciaFase = [np.mean(diferenciasF[i]) for i in range(len(diferenciasF))]
+stdDifFase = [np.std(diferenciasF[i]) for i in range(len(diferenciasF))]
+
+DiferenciaVol = [np.mean(diferenciasV[i]) for i in range(len(diferenciasV))]
+stdDifVol = [np.std(diferenciasV[i]) for i in range(len(diferenciasV))]
+
 
 def fase(w,w0):
     return -np.arctan(w/w0)
 
-w0 = 1/(10*0.00001)
-w = np.linspace(0,100000,101)
+def Transferencia(w,w0):
+    return 1/np.sqrt(1+(w/w0)**2)
+
+def Atenuación(w,w0):
+    return 20*np.log10(Transferencia(w,w0)) 
+def Atenuación2(T):
+    return 20*sp.log(T,10) 
+
+
+def ang(θ):
+    "Angulos en grados a radianes"
+    return θ*180/np.pi
+
+w0 = 1/(R*C)
+w = frecuencias_num 
+# corr
+w = w[1:]              
+wred = w/w0
+
+stdDifFaseRad = [propagación(ang, DiferenciaFase[i], stdDifFase[i]) for i in range(len(DiferenciaFase))]
+
+Atenuation = [Atenuación2(DiferenciaVol[i]) for i in range(len(DiferenciaVol))] 
+AttStd = [propagación(Atenuación2, DiferenciaVol[i], stdDifVol[i]) for i in range(len(DiferenciaVol))]
+
+n = 10000
+ejex = np.linspace(np.min(w), np.max(w), int(n))
+ejexred = np.linspace(np.min(wred), np.max(wred), int(n))
+
+#lineal
 
 plt.figure()
-plt.plot(w, fase(w,w0), ".")
-plt.plot(w, w*Diferencias,".")
-plt.show(block=True)
+plt.title("Desfasaje en Filtro Pasabajos RC")
+plt.xlabel("ω/ω0")
+plt.ylabel("Φ [grados]")
+plt.plot(ejexred, ang(fase(ejex,w0)), "r", label ="Modelo")
+plt.errorbar(wred, ang(w*DiferenciaFase), stdDifFaseRad, fmt=".", label = "Mediciones")
+plt.legend()
 
 
-exit()
-subset = df.loc[frec]
 plt.figure()
-plt.plot(subset.index, subset["V(a)"], ".b", label=f"Vout(a)")
-plt.plot(subset.index, subset["V(c)"], ".r", label=f"Vin(c)")
-plt.plot(XmxmIn, YmxmIn, ".g", label="Máximo")
-plt.plot(XminIn, YminIn, ".g", label="Minimo")
-plt.plot(XmxmOut, YmxmOut, ".g", label="Máximo")
-plt.plot(XminOut, YminOut, ".g", label="Minimo")
+plt.title("Transferencia en Filtro Pasabajos RC")
+plt.xlabel("ω/ω0")
+plt.ylabel("T")
+plt.errorbar(wred, DiferenciaVol, stdDifVol, fmt=".", label = "Mediciones")
+plt.plot(ejexred, Transferencia(ejex,w0), "r", label = "Modelo")
+plt.legend()
+
+#logaritmica
+
+plt.figure()
+plt.title("Desfasaje en Filtro Pasabajos RC")
+plt.xlabel("ω/ω0")
+plt.ylabel("Φ [grados]")
+plt.xscale('log') 
+plt.plot(ejexred, ang(fase(ejex,w0)), "r", label = "Modelo")
+plt.errorbar(wred, ang(w*DiferenciaFase), stdDifFaseRad ,fmt =".", label = "Mediciones")
+plt.legend()
+
+plt.figure()
+plt.title("Atenuación en Filtro Pasabajos RC")
+plt.xlabel("ω/ω0")
+plt.ylabel("A [dB]")
+plt.xscale('log') 
+plt.plot(ejexred, Atenuación(ejex,w0), "r", label = "Modelo")
+plt.errorbar(wred, Atenuation, AttStd, fmt =".", label = "Mediciones")
+plt.legend()
 
 plt.show(block=True)
-exit()
-for frec in frecuencias:
-    subset = df.loc[frec]
-    plt.figure()   
-    plt.plot(subset.index, subset["V(a)"], ".b", label=f"Vout(a)")
-    plt.plot(subset.index, subset["V(c)"], ".r", label=f"Vin(c)")
-    plt.xlabel("Tiempo (s)")
-    plt.ylabel("Voltaje (V)")
-    plt.title(f"V(a) para {frec}Hz")
-    plt.legend()
-    plt.grid(True)
-    plt.show(block=True)
+
 
 

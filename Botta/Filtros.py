@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from common_settings import*
 
+# CLASE 5
 
 R = 217    # Ω  # 220
 C = 1e-6   # F

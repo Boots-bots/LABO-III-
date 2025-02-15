@@ -48,8 +48,13 @@ def modulo(x):
         raise ValueError("Unsupported input type. Must be int, float, or list.")
 
 def rad(x):
-  "angulos a radianes"
+  "angulos en grados a radianes"
   return x*np.pi/180
+
+def ang(θ):
+    "Angulos en radianes a grados"
+    return θ*180/np.pi
+
 #-------------------------------
 
 # Normalizar datos                                                         # si se quiere normalizar un valor en vez de una lista usar [valor]

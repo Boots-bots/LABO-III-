@@ -562,7 +562,7 @@ if circuito in ("RLC", "rlc", "Rlc", "rLc", "rlC", "RLc", "rLC", "RlC"):
         return ang(np.arctan((w*r*c)/(w*l - 1/(w*c))))
 
     def Transferencia(w,r,l,c):
-        return (w*r*c)/((r**2) + (w*L - 1/(w*c))**2)
+        return (w*r*c)/((r**2) + (w*l - 1/(w*c))**2)
 
     def Atenuación(T):
         return 20*np.log10(np.abs(T)) 

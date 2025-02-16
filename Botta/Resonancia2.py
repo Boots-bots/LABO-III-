@@ -43,7 +43,7 @@ dif_amp = []
 dif_amp_std = []
 
 for frec in frecuencias600:
-    tiempo = df600.loc[frec]["Tiempo"].values      ############################
+    tiempo = df600.loc[frec]["Tiempo"].values      ############################     # LUGARES DONDE HAY QUE CAMBIAR DE 600 A 1200 SI SE QUIERE EJECUTAR LOS OTROS DATOS
     vch1 = df600.loc[frec]["VoltajeCH1"].values
     vch2 = df600.loc[frec]["VoltajeCH2"].values
 

@@ -1,3 +1,5 @@
+# CODIGO DE ANALISIS DE MEDICIONES DE RESONANCIA / FILTRO PASA BANDA RLC 
+
 # imports de cosas, por como esta armado el repositorio el archivo common_settings donde estan todas los imports y cosas
 # generales se carga de esta manera (hay un codigo para cargar cosas de forma similar de drive y en jupyter colab)
 import sys
@@ -20,7 +22,7 @@ def gen(t,V,f,φ):                          # esto es solo un seno para usar en 
 
 
 # este codigo es para las primeras mediciones, la que llamamos de "transferencia"
-# es el mismo codigo copiado que en el analisis de filtros RC y es el mismo que iba a usar 
+# es el mismo codigo copiado que en el analisis de filtros RC (a grandes rasgos) y es el mismo que iba a usar 
 # para los que llamamos de "Potencia", que son los de 104nF y 1200 Ω Υ 600 Ω
 # lo separe en codigos distintos solo por comodidad, pero es exactamente lo mismo
 

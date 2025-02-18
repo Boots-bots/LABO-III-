@@ -16,8 +16,7 @@ def gen(t,V,f,φ):
 
 # Clase 6 Med 2
 
-#Transferencia 
- #C 104nF /F 0.010 H /R 1200 ohm y 600 ohms
+ #C 104nF /L 0.010 H /R 1200 ohm y 600 ohms
  # w0 = 10000, f = 1591.5, dw = 120000, Q = 0.08)
 
 ruta = "C:/Users/faust/Documents/UBA/Actividades/Laboratorio/3/Datos/Resonancia/"

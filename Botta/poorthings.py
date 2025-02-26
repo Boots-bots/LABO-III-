@@ -18,7 +18,7 @@ Datos1200 = pd.read_csv(save_folder+"RLC_Potencia(104u)(1200).csv", index_col=["
 frecuencias12 = np.unique(Datos1200.index)
 frecuencias6 = np.unique(Datos600.index)
 
-R6 = 600
+R6 = 706
 R12 = 1200 #OHM
 L = 0.01 #10mH
 C = 104*10**(-9) #100nF
@@ -85,11 +85,11 @@ ejex = np.linspace(np.min(w12), np.max(w12), 1000)
 latex_corr = r"$|I| = \frac{|V|}{\sqrt{R^2 + \left( \omega L - \frac{1}{\omega C} \right)^2 }}$"
 
 plt.figure()
-plt.plot(ejex, I(ejex, *pipi6)*1000, "r", label = "Ajustes")
-plt.plot(ejex, I(ejex, *pipi12)*1000, "r")
+plt.plot(ejex, I(ejex, *pipi6)*1000, "r", label = "Ajuste R = 706 Ω")
+plt.plot(ejex, I(ejex, *pipi12)*1000, color="orange", label = "Ajuste R = 1200 Ω")
 plt.errorbar(w6, corr600m, yerr=stdI6, fmt=".", label = f"Q = {Q6:.1f}")   
 plt.errorbar(w12, corr1200m, yerr=stdI12, fmt=".", label = F"Q = {Q12:.1f}") 
-plt.text(0.1, 0.85, latex_corr,
+plt.text(0.1, 0.5, latex_corr,
          transform=plt.gca().transAxes, fontsize=14, color="black")
 plt.grid(True)
 plt.title("Corriente en Resonancia para diferentes Q")
@@ -134,8 +134,8 @@ latex_pot = r"$P(\omega) = \frac{V_{ef}^2 R}{R^2 + \left( \omega L - \frac{1}{\o
 
 
 plt.figure()
-plt.plot(ejex, Potencia(ejex, *popt6)*1000, color="r", label = "Ajustes") #linestyle = "--
-plt.plot(ejex, Potencia(ejex, *popt12)*1000, color="r")
+plt.plot(ejex, Potencia(ejex, *popt6)*1000, color="r", label = "Ajuste: R = 600 Ω") #linestyle = "--
+plt.plot(ejex, Potencia(ejex, *popt12)*1000, color="orange", label = "Ajuste: R = 1200 Ω")
 plt.errorbar(w6, PotenciaMM_600, yerr=std11, fmt= "b.", label = f"Q = {Q6:.1f}")
 plt.errorbar(w12, PotenciaMM_1200, yerr=std22, fmt= "g.", label = f"Q = {Q12:.1f}")
 plt.text(0.1, 0.85, latex_pot,
@@ -147,19 +147,19 @@ plt.xscale('log')
 plt.legend()
 plt.grid(True)
 
-# # bondad
-# Aj11 = chi2_pvalor(corriente6, stdI6, I(w6, *pipi6), ("R", "L", "C", "V"))         
-# Aj21 = chi2_pvalor(corriente12, stdI12, I(w12, *pipi12), ("R", "L", "C", "V"))
-# Aj12 = chi2_pvalor(Potencia6, std1, Potencia(w6, *popt6), ("R", "L", "C", "V"))         
-# Aj22 = chi2_pvalor(Potencia12, std2, Potencia(w12, *popt12), ("R", "L", "C", "V"))      
-# chi11 = Aj11[0]/Aj11[2]   
-# pval11 = Aj11[1]              
-# chi21 = Aj21[0]/Aj21[2]
-# pval21 = Aj21[1]
-# chi12 = Aj12[0]/Aj12[2]   
-# pval12 = Aj12[1]              
-# chi22 = Aj22[0]/Aj22[2]
-# pval22 = Aj22[1]
+# bondad
+Aj11 = chi2_pvalor(corriente6, stdI6, I(w6, *pipi6), ("R", "L", "C", "V"))         
+Aj21 = chi2_pvalor(corriente12, stdI12, I(w12, *pipi12), ("R", "L", "C", "V"))
+Aj12 = chi2_pvalor(Potencia6, std1, Potencia(w6, *popt6), ("R", "L", "C", "V"))         
+Aj22 = chi2_pvalor(Potencia12, std2, Potencia(w12, *popt12), ("R", "L", "C", "V"))      
+chi11 = Aj11[0]/Aj11[2]   
+pval11 = Aj11[1]              
+chi21 = Aj21[0]/Aj21[2]
+pval21 = Aj21[1]
+chi12 = Aj12[0]/Aj12[2]   
+pval12 = Aj12[1]              
+chi22 = Aj22[0]/Aj22[2]
+pval22 = Aj22[1]
 
 # print(chi11, pval11)
 # print(chi21, pval21)
@@ -189,6 +189,11 @@ print('R = ' + str(popt12[0]) + " ± " + str(perr12[0]))
 print('L = ' + str(popt12[1]) + " ± " + str(perr12[1]))
 print('C = ' + str(popt12[2]) + " ± " + str(perr12[2]))
 print('Vrms = ' + str(popt12[3]) + " ± " + str(perr12[3]))
-
-
+print(".....................")
+print("teo:", R6,R12,L,C,np.mean(Vrms1))
+print("R6 = ", np.mean((pipi6[0],popt6[0])), "±", np.std((pipi6[0],popt6[0])))
+print("R12 = ", np.mean((pipi12[0],popt12[0])), "±", np.std((pipi12[0],popt12[0])))
+print("L = ", np.mean((pipi6[1],popt6[1],pipi12[1],popt12[1])), "±", np.std((pipi6[1],popt6[1],pipi12[1],popt12[1])))
+print("C = ", np.mean((pipi6[2],popt6[2],pipi12[2],popt12[2])), "±", np.std((pipi6[2],popt6[2],pipi12[2],popt12[2])))
+print("Vrms = ", np.mean((pipi6[3],popt6[3],pipi12[3],popt12[3])), "±", np.std((pipi6[3],popt6[3],pipi12[3],popt12[3])))
 plt.show(block=True)

@@ -559,7 +559,7 @@ if circuito in ("RLC", "rlc", "Rlc", "rLc", "rlC", "RLc", "rLC", "RlC"):
     dif_amp_std = np.array(dif_amp_std)
 
     def fase(w,r,l,c):
-        return ang((np.arctan(w*l - 1/(w*c))/r))
+        return ang(np.arctan((w*l - 1/(w*c))/r))
 
     def Transferencia(w,r,l,c):
         return (r/(r**2 + (w*l - 1/(w*c))**2))

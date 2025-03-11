@@ -209,37 +209,63 @@ save_folder = ruta = "C:/Users/faust/Documents/UBA/Actividades/Laboratorio/3/Dat
 
 # rapido
 
-RS = pd.read_csv(save_folder + "Transrapidosubida.csv")
+# RS = pd.read_csv(save_folder + "Transrapidosubida.csv")
 
-ts = RS["Tiempo"]
-vch1s =  RS["VoltajeCH1"]
-vch2s = RS["VoltajeCH2"]
-vch1sstd, vch2sstd = std(RS)
+# ts = RS["Tiempo"]
+# vch1s =  RS["VoltajeCH1"]
+# vch2s = RS["VoltajeCH2"]
+# vch1sstd, vch2sstd = std(RS)
+
+# # plt.figure()
+# # plt.errorbar(ts,vch2s,yerr=vch2sstd,fmt=".",label="Voltaje Diodo")
+# # plt.errorbar(ts,vch1s,yerr=vch1sstd ,fmt=".", label="Fuente")
+# # plt.axvline(x=-11e-9, color='g', linestyle='--') 
+# # plt.axvline(x=112e-9, color='g', linestyle='--', label = f"t = 101 ns") 
+# # plt.title("Transitorio Activación del Diodo Rápido")
+# # plt.xlabel("Tiempo [s]")
+# # plt.ylabel("Voltaje [V]")
+# # plt.legend()
+
+# RB = pd.read_csv(save_folder + "Transrapidobajada.csv")
+
+# tb = RB["Tiempo"]
+# vch1 =  RB["VoltajeCH1"] 
+# vch2 = RB["VoltajeCH2"] # diodo
+# vch1std, vch2std = std(RB)
+
 
 # plt.figure()
-# plt.errorbar(ts,vch2s,yerr=vch2sstd,fmt=".",label="Voltaje Diodo")
-# plt.errorbar(ts,vch1s,yerr=vch1sstd ,fmt=".", label="Fuente")
-# plt.axvline(x=-11e-9, color='g', linestyle='--') 
-# plt.axvline(x=112e-9, color='g', linestyle='--', label = f"t = 101 ns") 
-# plt.title("Transitorio Activación del Diodo Rápido")
+# plt.errorbar(tb,vch2,yerr=vch2std,fmt=".",label="Voltaje Diodo")
+# plt.errorbar(tb,vch1,yerr=vch1std,fmt=".",label="Fuente")
+# plt.axvline(x=1.0032e-4, color='g', linestyle='--') 
+# plt.axvline(x=0.99985e-4, color='g', linestyle='--', label = f"t = 335 ns") 
+# plt.title("Transitorio Desactivación del Diodo Rápido")
 # plt.xlabel("Tiempo [s]")
 # plt.ylabel("Voltaje [V]")
 # plt.legend()
 
-RB = pd.read_csv(save_folder + "Transrapidobajada.csv")
+# plt.show(block=True)
 
-tb = RB["Tiempo"]
-vch1 =  RB["VoltajeCH1"] 
-vch2 = RB["VoltajeCH2"] # diodo
-vch1std, vch2std = std(RB)
+# Resistencia Variable
+# subida
 
+# Comun
+Cs270 = pd.read_csv(save_folder + "270Cs.csv")
+Cs4630 = pd.read_csv(save_folder + "4630Cs.csv")
+Cs8k = pd.read_csv(save_folder + "8kCs.csv")
+
+# Rapido
+Rs270 = pd.read_csv(save_folder + "270Rs.csv")
+Rs1k = pd.read_csv(save_folder + "1kRs.csv")
+Rs4630 = pd.read_csv(save_folder + "4630Rs.csv")
+Rs8k = pd.read_csv(save_folder + "8kRs.csv")
 
 plt.figure()
-plt.errorbar(tb,vch2,yerr=vch2std,fmt=".",label="Voltaje Diodo")
-plt.errorbar(tb,vch1,yerr=vch1std,fmt=".",label="Fuente")
-plt.axvline(x=1.0032e-4, color='g', linestyle='--') 
-plt.axvline(x=0.99985e-4, color='g', linestyle='--', label = f"t = 335 ns") 
-plt.title("Transitorio Desactivación del Diodo Rápido")
+plt.errorbar(Cs270["Tiempo"],Cs270["VoltajeCH2"],yerr=std(Cs270)[1],fmt=".",label="Voltaje Diodo")
+plt.errorbar(Cs270["Tiempo"],Cs270["VoltajeCH1"],yerr=std(Cs270)[0],fmt=".",label="Fuente")
+plt.axvline(x=70e-9, color='g', linestyle='--') 
+plt.axvline(x=-17e-9, color='g', linestyle='--', label = f"t = 64 ns") 
+plt.title("Transitorio Activación del Diodo Común Rc 270 Ω")
 plt.xlabel("Tiempo [s]")
 plt.ylabel("Voltaje [V]")
 plt.legend()
